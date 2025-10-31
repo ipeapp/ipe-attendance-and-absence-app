@@ -7,6 +7,7 @@ import '../services/supabase_service.dart';
 import '../models/attendance.dart';
 import 'attendance_screen.dart';
 import 'supervisor_attendance_screen.dart';
+import 'reports_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -102,7 +103,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ? _buildDashboard(employee)
                 : _selectedIndex == 1 && isSupervisor
                     ? const SupervisorAttendanceScreen()
-                    : const AttendanceScreen(),
+                    : _selectedIndex == 2 && isSupervisor
+                        ? const AttendanceScreen()
+                        : _selectedIndex == 3 && isSupervisor
+                            ? const ReportsScreen()
+                            : _selectedIndex == 1
+                                ? const AttendanceScreen()
+                                : const ReportsScreen(),
           ),
         ),
         bottomNavigationBar: _buildBottomNav(isSupervisor),
@@ -661,6 +668,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           const BottomNavigationBarItem(
             icon: Icon(Icons.access_time),
             label: 'الحضور',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'التقارير',
           ),
         ],
       ),
