@@ -1,0 +1,74 @@
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { DashboardLayout } from "@/components/dashboard-layout"
+import { Button } from "@/components/ui/button"
+import { Users, Plus } from "lucide-react"
+import Link from "next/link"
+import { EmployeesList } from "@/components/employees-list"
+
+export default async function EmployeesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string; department?: string }>
+}) {
+  const { search, department } = await searchParams
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/auth/login")
+  }
+
+  const { data: employee } = await supabase.from("employees").select("*").eq("user_id", user.id).single()
+
+  if (!employee || (employee.role !== "manager" && employee.role !== "supervisor")) {
+    redirect("/dashboard")
+  }
+
+  let query = supabase.from("employees").select("*, department:departments(*)").order("full_name")
+
+  if (search) {
+    query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,employee_number.ilike.%${search}%`)
+  }
+
+  if (department) {
+    query = query.eq("department_id", department)
+  }
+
+  const { data: employees } = await query
+
+  const { data: departments } = await supabase.from("departments").select("*").order("name")
+
+  return (
+    <DashboardLayout userRole={employee.role} userName={employee.full_name}>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <Users className="h-8 w-8 text-violet-600" />
+              إدارة الموظفين
+            </h1>
+            <p className="text-muted-foreground mt-1">إضافة وتعديل وحذف الموظفين</p>
+          </div>
+          {employee.role === "manager" && (
+            <Link href="/dashboard/employees/new">
+              <Button className="bg-violet-600 hover:bg-violet-700">
+                <Plus className="h-4 w-4 ml-2" />
+                إضافة موظف جديد
+              </Button>
+            </Link>
+          )}
+        </div>
+
+        <EmployeesList
+          employees={employees || []}
+          departments={departments || []}
+          canEdit={employee.role === "manager"}
+        />
+      </div>
+    </DashboardLayout>
+  )
+}
