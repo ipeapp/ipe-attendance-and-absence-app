@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClipboardCheck, Calendar } from "lucide-react"
 import { AttendanceCheckIn } from "@/components/attendance-check-in"
 import { AttendanceHistory } from "@/components/attendance-history"
+import { SupervisorAttendanceManager } from "@/components/supervisor-attendance-manager"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default async function AttendancePage({
@@ -63,8 +64,9 @@ export default async function AttendancePage({
 
   const { data: attendanceHistory } = await historyQuery
 
-  // For managers/supervisors, get team attendance
+  // For managers/supervisors, get team attendance and employees
   let teamAttendance = null
+  let allEmployees = null
   if (employee.role === "manager" || employee.role === "supervisor") {
     const { data } = await supabase
       .from("attendance_records")
@@ -73,6 +75,29 @@ export default async function AttendancePage({
       .order("created_at", { ascending: false })
 
     teamAttendance = data
+
+    // Get all employees for supervisor management
+    let employeesQuery = supabase
+      .from("employees")
+      .select("*, department:departments(*)")
+      .eq("is_active", true)
+      .order("full_name")
+
+    // Supervisors see only their department's employees
+    if (employee.role === "supervisor" && employee.department_id) {
+      employeesQuery = employeesQuery.eq("department_id", employee.department_id)
+    }
+
+    const { data: empData } = await employeesQuery
+    allEmployees = empData
+
+    // Get today's attendance for all employees
+    const { data: allAttendanceData } = await supabase
+      .from("attendance_records")
+      .select("*")
+      .eq("date", today)
+
+    teamAttendance = allAttendanceData
   }
 
   return (
@@ -86,14 +111,25 @@ export default async function AttendancePage({
           <p className="text-muted-foreground mt-1">تسجيل الحضور والانصراف ومتابعة السجلات</p>
         </div>
 
-        <Tabs defaultValue="checkin" className="space-y-6">
+        <Tabs defaultValue={employee.role === "manager" || employee.role === "supervisor" ? "team" : "checkin"} className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-3">
+            {(employee.role === "manager" || employee.role === "supervisor") && (
+              <TabsTrigger value="team">إدارة الفريق</TabsTrigger>
+            )}
             <TabsTrigger value="checkin">تسجيل الحضور</TabsTrigger>
             <TabsTrigger value="history">السجلات</TabsTrigger>
-            {(employee.role === "manager" || employee.role === "supervisor") && (
-              <TabsTrigger value="team">الفريق</TabsTrigger>
-            )}
           </TabsList>
+
+          {(employee.role === "manager" || employee.role === "supervisor") && (
+            <TabsContent value="team">
+              <SupervisorAttendanceManager
+                employees={allEmployees || []}
+                todayAttendance={teamAttendance || []}
+                shifts={shifts || []}
+                supervisorId={employee.id}
+              />
+            </TabsContent>
+          )}
 
           <TabsContent value="checkin" className="space-y-6">
             <AttendanceCheckIn employee={employee} todayAttendance={todayAttendance || []} shifts={shifts || []} />
@@ -102,61 +138,6 @@ export default async function AttendancePage({
           <TabsContent value="history">
             <AttendanceHistory attendance={attendanceHistory || []} canFilter={true} />
           </TabsContent>
-
-          {(employee.role === "manager" || employee.role === "supervisor") && (
-            <TabsContent value="team">
-              <Card className="border-violet-100">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-violet-600" />
-                    حضور الفريق اليوم
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {teamAttendance && teamAttendance.length > 0 ? (
-                    <div className="space-y-3">
-                      {teamAttendance.map((record: any) => (
-                        <div
-                          key={record.id}
-                          className="flex items-center justify-between p-4 border border-violet-100 rounded-lg"
-                        >
-                          <div>
-                            <p className="font-medium">{record.employee.full_name}</p>
-                            <p className="text-sm text-muted-foreground">{record.employee.employee_number}</p>
-                          </div>
-                          <div className="text-left">
-                            <span
-                              className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                                record.status === "present"
-                                  ? "bg-green-100 text-green-700"
-                                  : record.status === "late"
-                                    ? "bg-amber-100 text-amber-700"
-                                    : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {record.status === "present" && "حاضر"}
-                              {record.status === "late" && "متأخر"}
-                              {record.status === "absent" && "غائب"}
-                            </span>
-                            {record.check_in_time && (
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {new Date(record.check_in_time).toLocaleTimeString("ar-SA", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center text-muted-foreground py-8">لا توجد سجلات حضور اليوم</p>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          )}
         </Tabs>
       </div>
     </DashboardLayout>
