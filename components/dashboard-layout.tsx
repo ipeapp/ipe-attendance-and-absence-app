@@ -87,11 +87,18 @@ export function DashboardLayout({ children, userRole = "employee", userName }: D
   const filteredNavigation = navigationItems.filter((item) => item.roles.includes(userRole))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-violet-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 right-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 right-0 left-0 z-50 bg-white border-b border-violet-100 shadow-sm">
+      <div className="lg:hidden fixed top-0 right-0 left-0 z-50 bg-white/80 backdrop-blur-lg border-b border-violet-100 shadow-sm">
         <div className="flex items-center justify-between p-4">
-          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} className="hover:bg-violet-100">
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           <img src="/ipe-logo.png" alt="IPE Logo" className="h-8" />
@@ -102,29 +109,39 @@ export function DashboardLayout({ children, userRole = "employee", userName }: D
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 z-40 h-screen w-64 bg-white border-l border-violet-100 shadow-lg transition-transform duration-300",
+          "fixed top-0 right-0 z-40 h-screen w-64 bg-white/95 backdrop-blur-xl border-l border-violet-200 shadow-2xl transition-transform duration-300",
           "lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-violet-100">
+          <div className="p-6 border-b border-violet-200 bg-gradient-to-b from-violet-50 to-transparent">
             <div className="flex justify-center mb-4">
-              <img src="/ipe-logo.png" alt="IPE Logo" className="h-20 w-auto" />
+              <div className="relative">
+                <div className="absolute inset-0 bg-violet-400 rounded-full blur-xl opacity-30"></div>
+                <img src="/ipe-logo.png" alt="IPE Logo" className="h-20 w-auto relative z-10" />
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground text-center">نظام الحضور والغياب</p>
+            <p className="text-sm text-muted-foreground text-center font-medium">نظام الحضور والغياب</p>
           </div>
 
           {/* User Info */}
           {userName && (
-            <div className="p-4 border-b border-violet-100 bg-violet-50">
-              <p className="text-sm font-medium text-foreground">{userName}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {userRole === "manager" && "مدير"}
-                {userRole === "supervisor" && "مشرف"}
-                {userRole === "employee" && "موظف"}
-              </p>
+            <div className="p-4 border-b border-violet-200 bg-gradient-to-br from-violet-100 to-purple-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                  {userName.charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">{userName}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {userRole === "manager" && "مدير"}
+                    {userRole === "supervisor" && "مشرف"}
+                    {userRole === "employee" && "موظف"}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
