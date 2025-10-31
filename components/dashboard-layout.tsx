@@ -87,40 +87,46 @@ export function DashboardLayout({ children, userRole = "employee", userName }: D
   const filteredNavigation = navigationItems.filter((item) => item.roles.includes(userRole))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-amber-50">
+    <div className="relative min-h-screen text-foreground">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 right-0 left-0 z-50 bg-white border-b border-violet-100 shadow-sm">
-        <div className="flex items-center justify-between p-4">
-          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
-          <img src="/ipe-logo.png" alt="IPE Logo" className="h-8" />
-          <div className="w-10" />
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between border-b border-[var(--border)] bg-surface/90 px-4 py-3 shadow-[var(--shadow-xs)] backdrop-blur lg:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="rounded-full"
+        >
+          {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </Button>
+        <div className="flex items-center gap-2">
+          <img src="/ipe-logo.png" alt="IPE Logo" className="h-8 w-auto" />
+          <span className="text-sm font-semibold text-[var(--neutral-600)]">نظام الموارد البشرية</span>
         </div>
+        <div className="w-10" />
       </div>
 
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 z-40 h-screen w-64 bg-white border-l border-violet-100 shadow-lg transition-transform duration-300",
+          "fixed top-0 right-0 z-40 flex h-screen w-64 flex-col border-l border-[var(--sidebar-border)] bg-[var(--sidebar)] text-[var(--sidebar-foreground)] shadow-[var(--shadow-md)] backdrop-blur transition-transform duration-300",
           "lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="p-6 border-b border-violet-100">
-            <div className="flex justify-center mb-4">
-              <img src="/ipe-logo.png" alt="IPE Logo" className="h-20 w-auto" />
-            </div>
-            <p className="text-sm text-muted-foreground text-center">نظام الحضور والغياب</p>
+          <div className="flex flex-col items-center gap-4 border-b border-white/10 px-6 pb-8 pt-12">
+            <span className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--sidebar-accent)] text-2xl font-semibold text-[var(--sidebar-primary-foreground)] shadow-[var(--shadow-sm)]">
+              HR
+            </span>
+            <p className="text-sm text-white/70">نظام الحضور وإدارة المواهب</p>
           </div>
 
           {/* User Info */}
           {userName && (
-            <div className="p-4 border-b border-violet-100 bg-violet-50">
-              <p className="text-sm font-medium text-foreground">{userName}</p>
-              <p className="text-xs text-muted-foreground mt-1">
+            <div className="border-b border-white/10 bg-[var(--sidebar-accent)]/60 px-6 py-4">
+              <p className="text-sm font-medium text-[var(--sidebar-primary-foreground)]">{userName}</p>
+              <p className="mt-1 text-xs text-white/70">
                 {userRole === "manager" && "مدير"}
                 {userRole === "supervisor" && "مشرف"}
                 {userRole === "employee" && "موظف"}
@@ -129,7 +135,7 @@ export function DashboardLayout({ children, userRole = "employee", userName }: D
           )}
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
             {filteredNavigation.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -139,35 +145,44 @@ export function DashboardLayout({ children, userRole = "employee", userName }: D
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                    "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-all",
                     isActive
-                      ? "bg-violet-100 text-violet-700 font-medium"
-                      : "text-muted-foreground hover:bg-violet-50 hover:text-violet-600",
+                      ? "bg-white/10 text-[var(--sidebar-primary-foreground)] shadow-[var(--shadow-xs)]"
+                      : "text-white/60 hover:bg-white/5 hover:text-[var(--sidebar-primary-foreground)]",
                   )}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span>{item.title}</span>
+                  <span
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 transition-colors",
+                      isActive
+                        ? "bg-white/15 text-[var(--sidebar-primary-foreground)]"
+                        : "bg-white/5 text-white/60 group-hover:bg-white/10",
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="font-medium">{item.title}</span>
                 </Link>
               )
             })}
           </nav>
 
           {/* Logout Button */}
-          <div className="p-4 border-t border-violet-100">
+          <div className="border-t border-white/10 px-4 py-4">
             <Button
               variant="ghost"
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="w-full justify-start rounded-xl bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-[var(--sidebar-primary-foreground)]"
               onClick={handleLogout}
             >
-              <LogOut className="h-5 w-5 ml-2" />
+              <LogOut className="ml-2 h-4 w-4" />
               تسجيل الخروج
             </Button>
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-violet-100 bg-muted/30">
-            <p className="text-xs text-center text-muted-foreground">تطوير الولي سوفت</p>
-            <p className="text-xs text-center text-muted-foreground mt-1">+967777670507</p>
+          <div className="border-t border-white/10 px-4 py-4 text-center text-[11px] text-white/50">
+            <p>تطوير الولي سوفت</p>
+            <p className="mt-1">+967777670507</p>
           </div>
         </div>
       </aside>
@@ -178,8 +193,10 @@ export function DashboardLayout({ children, userRole = "employee", userName }: D
       )}
 
       {/* Main Content */}
-      <main className="lg:mr-64 pt-16 lg:pt-0">
-        <div className="p-6 lg:p-8">{children}</div>
+      <main className="pt-16 lg:mr-64 lg:pt-0">
+        <div className="app-shell py-10 lg:py-12">
+          <div className="flex flex-col gap-8">{children}</div>
+        </div>
       </main>
     </div>
   )
