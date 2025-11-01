@@ -110,6 +110,15 @@ export default async function DashboardPage() {
     )
   }
 
+  // Redirect manager and supervisor to their specialized dashboards
+  if (employee.role === "manager") {
+    redirect("/dashboard/manager")
+  }
+  
+  if (employee.role === "supervisor") {
+    redirect("/dashboard/supervisor")
+  }
+
   const stats = await getDashboardStats(employee.id, employee.role)
   const today = new Date().toLocaleDateString("ar-SA", {
     weekday: "long",
