@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AttendanceCalendar } from "@/components/attendance-calendar"
 import {
   User,
   ArrowLeft,
@@ -362,7 +363,7 @@ export default async function EmployeeDetailPage({ params }: PageProps) {
           {/* سجل الحضور */}
           <TabsContent value="attendance" className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">سجل الحضور (آخر 30 يوم)</h3>
+              <h3 className="text-lg font-semibold">سجل الحضور</h3>
               <Link href={`/dashboard/attendance?employee_id=${id}`}>
                 <Button variant="outline" size="sm">
                   <BarChart3 className="ml-2 h-4 w-4" />
@@ -370,6 +371,20 @@ export default async function EmployeeDetailPage({ params }: PageProps) {
                 </Button>
               </Link>
             </div>
+
+            {/* تقويم الحضور */}
+            <AttendanceCalendar 
+              records={attendanceRecords.map(record => ({
+                date: record.date,
+                status: record.status as any,
+                check_in_time: record.check_in_time || undefined,
+                check_out_time: record.check_out_time || undefined,
+                late_minutes: record.late_minutes || undefined,
+              }))} 
+              employeeName={employee.full_name}
+            />
+
+            <h3 className="text-lg font-semibold pt-6">التفاصيل (آخر 30 يوم)</h3>
 
             {attendanceRecords.length === 0 ? (
               <Card>

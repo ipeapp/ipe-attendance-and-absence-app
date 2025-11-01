@@ -255,7 +255,7 @@ export default async function ManagerDashboardPage() {
         {/* أزرار الإجراءات السريعة */}
         <section className="surface-card border-none p-6">
           <h2 className="mb-6 text-xl font-semibold text-[var(--foreground)]">إجراءات سريعة</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <Link href="/dashboard/departments">
               <Button
                 variant="outline"
@@ -291,6 +291,19 @@ export default async function ManagerDashboardPage() {
                 <div className="text-center">
                   <p className="font-semibold text-[var(--foreground)]">التقارير</p>
                   <p className="text-xs text-[var(--neutral-500)]">تقارير مفصلة وإحصائيات</p>
+                </div>
+              </Button>
+            </Link>
+
+            <Link href="/dashboard/analytics">
+              <Button
+                variant="outline"
+                className="h-auto w-full flex-col gap-3 bg-white p-6 hover:border-purple-400 hover:bg-purple-50"
+              >
+                <TrendingUp className="h-8 w-8 text-purple-600" />
+                <div className="text-center">
+                  <p className="font-semibold text-[var(--foreground)]">التحليلات</p>
+                  <p className="text-xs text-[var(--neutral-500)]">رؤى استراتيجية متقدمة</p>
                 </div>
               </Button>
             </Link>
