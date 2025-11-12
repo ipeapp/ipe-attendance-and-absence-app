@@ -4,8 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { EmptyState } from "@/components/empty-state"
-import { cn } from "@/lib/utils"
 import { Calendar, Filter, Clock, MapPin } from "lucide-react"
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -39,17 +37,17 @@ export function AttendanceHistory({ attendance, canFilter = false }: AttendanceH
   const getStatusColor = (status: string) => {
     switch (status) {
       case "present":
-        return "bg-[var(--semantic-success)]/10 text-[var(--semantic-success)]"
+        return "bg-green-100 text-green-700"
       case "late":
-        return "bg-[var(--semantic-warning)]/10 text-[var(--semantic-warning)]"
+        return "bg-amber-100 text-amber-700"
       case "absent":
-        return "bg-[var(--semantic-critical)]/10 text-[var(--semantic-critical)]"
+        return "bg-red-100 text-red-700"
       case "half_day":
-        return "bg-[var(--brand-600)]/10 text-[var(--brand-600)]"
+        return "bg-blue-100 text-blue-700"
       case "excused":
-        return "bg-[var(--semantic-info)]/10 text-[var(--semantic-info)]"
+        return "bg-purple-100 text-purple-700"
       default:
-        return "bg-[var(--surface-muted)] text-[var(--neutral-600)]"
+        return "bg-gray-100 text-gray-700"
     }
   }
 
@@ -71,17 +69,14 @@ export function AttendanceHistory({ attendance, canFilter = false }: AttendanceH
   }
 
   return (
-    <Card className="surface-card border-none">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-[var(--border)]/60 p-6 pb-4">
-        <div>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Calendar className="h-5 w-5 text-[var(--brand-600)]" />
-            سجل الحضور
-          </CardTitle>
-          <p className="mt-1 text-sm text-[var(--neutral-500)]">تتبع السجلات التاريخية للحضور والانصراف</p>
-        </div>
+    <Card className="border-violet-100">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-violet-600" />
+          سجل الحضور
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-4">
         {canFilter && (
           <div className="flex flex-col md:flex-row gap-3">
             <Input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="md:w-48" />

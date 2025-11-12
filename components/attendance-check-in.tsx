@@ -9,7 +9,6 @@ import { Clock, MapPin, Fingerprint, Smartphone, UserCheck, LogIn, LogOut, Check
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
 
 interface AttendanceCheckInProps {
   employee: any
@@ -136,32 +135,31 @@ export function AttendanceCheckIn({ employee, todayAttendance, shifts }: Attenda
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {/* Check-in Status */}
-      <Card className="surface-card border-none">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-[var(--border)]/60 p-6 pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Clock className="h-5 w-5 text-[var(--brand-600)]" />
+      <Card className="border-violet-100">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-violet-600" />
             حالة الحضور اليوم
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 p-6">
+        <CardContent className="space-y-4">
           {todayAttendance.length > 0 ? (
             todayAttendance.map((record) => (
               <div key={record.id} className="space-y-3">
-                <div className="flex items-center justify-between rounded-2xl bg-[var(--surface-muted)]/80 px-4 py-3">
-                  <span className="text-xs font-medium text-[var(--neutral-500)]">الفترة</span>
-                  <span className="text-sm font-semibold text-[var(--foreground)]">{record.shift?.name}</span>
+                <div className="flex items-center justify-between p-3 bg-violet-50 rounded-lg">
+                  <span className="text-sm text-muted-foreground">الفترة:</span>
+                  <span className="font-medium">{record.shift?.name}</span>
                 </div>
-                <div className="flex items-center justify-between rounded-2xl bg-[var(--surface-muted)]/80 px-4 py-3">
-                  <span className="text-xs font-medium text-[var(--neutral-500)]">الحالة</span>
+                <div className="flex items-center justify-between p-3 bg-violet-50 rounded-lg">
+                  <span className="text-sm text-muted-foreground">الحالة:</span>
                   <span
-                    className={cn(
-                      "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+                    className={`font-medium px-3 py-1 rounded-full text-sm ${
                       record.status === "present"
-                        ? "bg-[var(--semantic-success)]/10 text-[var(--semantic-success)]"
+                        ? "bg-green-100 text-green-700"
                         : record.status === "late"
-                          ? "bg-[var(--semantic-warning)]/10 text-[var(--semantic-warning)]"
-                          : "bg-[var(--semantic-critical)]/10 text-[var(--semantic-critical)]",
-                    )}
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-red-100 text-red-700"
+                    }`}
                   >
                     {record.status === "present" && "حاضر"}
                     {record.status === "late" && "متأخر"}
@@ -169,9 +167,9 @@ export function AttendanceCheckIn({ employee, todayAttendance, shifts }: Attenda
                   </span>
                 </div>
                 {record.check_in_time && (
-                  <div className="flex items-center justify-between rounded-2xl bg-[var(--surface-muted)]/80 px-4 py-3">
-                    <span className="text-xs font-medium text-[var(--neutral-500)]">وقت الحضور</span>
-                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                  <div className="flex items-center justify-between p-3 bg-violet-50 rounded-lg">
+                    <span className="text-sm text-muted-foreground">وقت الحضور:</span>
+                    <span className="font-medium">
                       {new Date(record.check_in_time).toLocaleTimeString("ar-SA", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -180,9 +178,9 @@ export function AttendanceCheckIn({ employee, todayAttendance, shifts }: Attenda
                   </div>
                 )}
                 {record.check_out_time && (
-                  <div className="flex items-center justify-between rounded-2xl bg-[var(--surface-muted)]/80 px-4 py-3">
-                    <span className="text-xs font-medium text-[var(--neutral-500)]">وقت الانصراف</span>
-                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                  <div className="flex items-center justify-between p-3 bg-violet-50 rounded-lg">
+                    <span className="text-sm text-muted-foreground">وقت الانصراف:</span>
+                    <span className="font-medium">
                       {new Date(record.check_out_time).toLocaleTimeString("ar-SA", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -191,40 +189,40 @@ export function AttendanceCheckIn({ employee, todayAttendance, shifts }: Attenda
                   </div>
                 )}
                 {record.late_minutes > 0 && (
-                  <div className="flex items-center justify-between rounded-2xl bg-[var(--semantic-warning)]/10 px-4 py-3">
-                    <span className="text-xs font-medium text-[var(--neutral-500)]">مدة التأخير</span>
-                    <span className="text-sm font-semibold text-[var(--semantic-warning)]">{record.late_minutes} دقيقة</span>
+                  <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                    <span className="text-sm text-muted-foreground">مدة التأخير:</span>
+                    <span className="font-medium text-amber-600">{record.late_minutes} دقيقة</span>
                   </div>
                 )}
               </div>
             ))
           ) : (
-            <div className="py-10 text-center">
-              <Clock className="mx-auto mb-3 h-12 w-12 text-[var(--neutral-400)]" />
-              <p className="text-sm text-[var(--neutral-500)]">لم يتم تسجيل الحضور بعد</p>
+            <div className="text-center py-8">
+              <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">لم يتم تسجيل الحضور بعد</p>
             </div>
           )}
         </CardContent>
       </Card>
 
       {/* Check-in Form */}
-      <Card className="surface-card border-none">
-        <CardHeader className="border-b border-[var(--border)]/60 p-6 pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
+      <Card className="border-violet-100">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
             {hasCheckedIn && !hasCheckedOut ? (
               <>
-                <LogOut className="h-5 w-5 text-[var(--brand-600)]" />
+                <LogOut className="h-5 w-5 text-violet-600" />
                 تسجيل الانصراف
               </>
             ) : (
               <>
-                <LogIn className="h-5 w-5 text-[var(--brand-600)]" />
+                <LogIn className="h-5 w-5 text-violet-600" />
                 تسجيل الحضور
               </>
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5 p-6">
+        <CardContent className="space-y-4">
           {!hasCheckedIn ? (
             <>
               <div className="space-y-2">
@@ -284,7 +282,7 @@ export function AttendanceCheckIn({ employee, todayAttendance, shifts }: Attenda
                   </Button>
                 </div>
                 {location && (
-                  <p className="flex items-center gap-1 text-xs text-[var(--semantic-success)]">
+                  <p className="text-xs text-green-600 flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
                     تم الحصول على الموقع بنجاح
                   </p>
@@ -305,28 +303,24 @@ export function AttendanceCheckIn({ employee, todayAttendance, shifts }: Attenda
             />
           </div>
 
-          {error && <div className="rounded-2xl bg-[var(--semantic-critical)]/10 p-3 text-sm text-[var(--semantic-critical)]">{error}</div>}
+          {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
 
           {!hasCheckedIn ? (
             <Button
               onClick={handleCheckIn}
               disabled={isLoading || !selectedShift}
-              className="w-full rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] transition hover:opacity-90"
+              className="w-full bg-violet-600 hover:bg-violet-700"
             >
               {isLoading ? "جاري التسجيل..." : "تسجيل الحضور"}
             </Button>
           ) : !hasCheckedOut ? (
-            <Button
-              onClick={handleCheckOut}
-              disabled={isLoading}
-              className="w-full rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] transition hover:opacity-90"
-            >
+            <Button onClick={handleCheckOut} disabled={isLoading} className="w-full bg-violet-600 hover:bg-violet-700">
               {isLoading ? "جاري التسجيل..." : "تسجيل الانصراف"}
             </Button>
           ) : (
-            <div className="rounded-2xl bg-[var(--semantic-success)]/10 px-4 py-6 text-center">
-              <CheckCircle2 className="mx-auto mb-2 h-10 w-10 text-[var(--semantic-success)]" />
-              <p className="text-sm font-medium text-[var(--semantic-success)]">تم تسجيل الحضور والانصراف</p>
+            <div className="text-center py-4">
+              <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto mb-2" />
+              <p className="text-green-600 font-medium">تم تسجيل الحضور والانصراف</p>
             </div>
           )}
         </CardContent>
